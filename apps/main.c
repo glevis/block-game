@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../extern/cglm/include/cglm/cglm.h"
+#include "../include/block.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -65,49 +66,11 @@ int main() {
 
     shader_init("/home/glevis/personal/craft-project/shaders/shader.vs", "/home/glevis/personal/craft-project/shaders/shader.fs", &shader1);
 
-float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-     0.5f, -0.5f, -0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-     0.5f,  0.5f, -0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-     0.5f,  0.5f, -0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-    -0.5f,  0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-    -0.5f, -0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
+    struct block_t* grass_block;
+    grass_block = malloc(sizeof(struct block_t));
 
-    -0.5f, -0.5f,  0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-     0.5f, -0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-     0.5f,  0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-     0.5f,  0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-    -0.5f,  0.5f,  0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-    -0.5f, -0.5f,  0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-
-    -0.5f,  0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,  
-    -0.5f,  0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-    -0.5f, -0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-    -0.5f, -0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-    -0.5f, -0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-    -0.5f,  0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-
-     0.5f,  0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0, 
-     0.5f,  0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-     0.5f, -0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-     0.5f, -0.5f, -0.5f,  ((620 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-     0.5f, -0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-     0.5f,  0.5f,  0.5f,  ((620 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-
-    -0.5f, -0.5f, -0.5f,  ((616 % 32) + 0.0f) / 32.0, ((800 / 32.0) + 0.0f) / 32.0, //bottom
-     0.5f, -0.5f, -0.5f,  ((616 % 32) + 1.0f) / 32.0, ((800 / 32.0) + 0.0f) / 32.0,
-     0.5f, -0.5f,  0.5f,  ((616 % 32) + 1.0f) / 32.0, ((800 / 32.0) + 1.0f) / 32.0,
-     0.5f, -0.5f,  0.5f,  ((616 % 32) + 1.0f) / 32.0, ((800 / 32.0) + 1.0f) / 32.0,
-    -0.5f, -0.5f,  0.5f,  ((616 % 32) + 0.0f) / 32.0, ((800 / 32.0) + 1.0f) / 32.0,
-    -0.5f, -0.5f, -0.5f,  ((616 % 32) + 0.0f) / 32.0, ((800 / 32.0) + 0.0f) / 32.0,
-
-    -0.5f,  0.5f, -0.5f,  ((623 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0, //top
-     0.5f,  0.5f, -0.5f,  ((623 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0,
-     0.5f,  0.5f,  0.5f,  ((623 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-     0.5f,  0.5f,  0.5f,  ((623 % 32) + 1.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-    -0.5f,  0.5f,  0.5f,  ((623 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 1.0f) / 32.0,
-    -0.5f,  0.5f, -0.5f,  ((623 % 32) + 0.0f) / 32.0, ((672 / 32.0) + 0.0f) / 32.0
-};
+    block_init(grass_block, grass);
+    printf("%f\n", grass_block->vertices[0]);
 
     unsigned int indices[] = {
         0, 1, 3,
@@ -129,7 +92,6 @@ float vertices[] = {
         {-1.3f, 1.0f, -1.5f},
     };
 
-
     /*
      * Vertex Buffer Object (VBO):
      * Stores vertices on the GPU. Sends vertices in batch from CPU to GPU.
@@ -143,14 +105,15 @@ float vertices[] = {
 
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(grass_block->vertices), grass_block->vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
     // texture coord attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
@@ -197,8 +160,6 @@ float vertices[] = {
         glBindTexture(GL_TEXTURE_2D, texture);
   
         shader_use(&shader1);
-
-
 
         mat4 proj;
         glm_mat4_identity(proj);

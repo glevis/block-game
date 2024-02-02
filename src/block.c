@@ -6,6 +6,16 @@ void block_init(struct block_t *block, block_type_t type) {
 
     //TODO: Change texture based on block type.
 
+    //((32 * (int) type) % 32) + 0.0 / 32.0;
+    float side_texture_pos = ((620 % 32) + 0.0) / 32.0;
+    float top_texture_pos = ((620 % 32) + 0.0) / 32.0;
+    float bot_texture_pos = ((620 % 32) + 0.0) / 32.0;
+
+    if (type != grass) {
+        top_texture_pos = side_texture_pos;
+        bot_texture_pos = side_texture_pos;
+    }
+    
     block->vertices[0] = -0.5f; 
     block->vertices[1] = -0.5f; 
     block->vertices[2] = -0.5f; 
@@ -130,7 +140,7 @@ void block_init(struct block_t *block, block_type_t type) {
     block->vertices[118] = ((620 % 32) + 1.0f) / 32.0;
     block->vertices[119] = ((672 / 32.0) + 1.0f) / 32.0;
 
-    block->vertices[120] = -0.5f;                             //top
+    block->vertices[120] = -0.5f;                             //bottom
     block->vertices[121] = -0.5f; 
     block->vertices[122] = -0.5f; 
     block->vertices[123] = ((616 % 32) + 0.0f) / 32.0;
@@ -161,35 +171,35 @@ void block_init(struct block_t *block, block_type_t type) {
     block->vertices[148] = ((616 % 32) + 0.0f) / 32.0;
     block->vertices[149] = ((800 / 32.0) + 0.0f) / 32.0;
 
-    block->vertices[150] = -0.5f;                             //bottom
+    block->vertices[150] = 0.5f; 
     block->vertices[151] = 0.5f; 
     block->vertices[152] = -0.5f; 
-    block->vertices[153] = ((623 % 32) + 0.0f) / 32.0;
+    block->vertices[153] = ((623 % 32) + 1.0f) / 32.0;
     block->vertices[154] = ((672 / 32.0) + 0.0f) / 32.0;
-    block->vertices[155] = 0.5f; 
+    block->vertices[155] = -0.5f;                             //top
     block->vertices[156] = 0.5f; 
     block->vertices[157] = -0.5f; 
-    block->vertices[158] = ((623 % 32) + 1.0f) / 32.0;
+    block->vertices[158] = ((623 % 32) + 0.0f) / 32.0;
     block->vertices[159] = ((672 / 32.0) + 0.0f) / 32.0;
-    block->vertices[160] = 0.5f; 
+    block->vertices[160] = -0.5f; 
     block->vertices[161] = 0.5f; 
     block->vertices[162] = 0.5f; 
-    block->vertices[163] = ((623 % 32) + 1.0f) / 32.0;
+    block->vertices[163] = ((623 % 32) + 0.0f) / 32.0;
     block->vertices[164] = ((672 / 32.0) + 1.0f) / 32.0;
-    block->vertices[165] = 0.5f; 
+    block->vertices[165] = -0.5f; 
     block->vertices[166] = 0.5f; 
     block->vertices[167] = 0.5f; 
-    block->vertices[168] = ((623 % 32) + 1.0f) / 32.0;
+    block->vertices[168] = ((623 % 32) + 0.0f) / 32.0;
     block->vertices[169] = ((672 / 32.0) + 1.0f) / 32.0;
-    block->vertices[170] = -0.5f; 
+    block->vertices[170] = 0.5f; 
     block->vertices[171] = 0.5f; 
     block->vertices[172] = 0.5f; 
-    block->vertices[173] = ((623 % 32) + 0.0f) / 32.0;
+    block->vertices[173] = ((623 % 32) + 1.0f) / 32.0;
     block->vertices[174] = ((672 / 32.0) + 1.0f) / 32.0;
-    block->vertices[175] = -0.5f; 
+    block->vertices[175] = 0.5f; 
     block->vertices[176] = 0.5f; 
     block->vertices[177] = -0.5f; 
-    block->vertices[178] = ((623 % 32) + 0.0f) / 32.0;
+    block->vertices[178] = ((623 % 32) + 1.0f) / 32.0;
     block->vertices[179] = ((672 / 32.0) + 0.0f) / 32.0;
 
     printf("block initiated\n");

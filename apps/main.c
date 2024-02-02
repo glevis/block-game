@@ -61,6 +61,9 @@ int main() {
     //glViewport(0, 0, 800, 600);
     
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
 
     struct Shader shader1;
 
@@ -144,15 +147,26 @@ int main() {
     shader_use(&shader1);
     shader_set_int("texture1", 0, &shader1);
 
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
+
     while(!glfwWindowShouldClose(window))
     {
+        double currentTime = glfwGetTime();
+        nbFrames++;
+
+        if (currentTime - lastTime >= 1.0) {
+            printf("%f ms/frame\n", 1000.0/(double)nbFrames);
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
         float currentFrame = (float)glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
         process_input(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.431f, .694f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // bind textures on corresponding texture units
@@ -174,7 +188,7 @@ int main() {
 
         glBindVertexArray(VAO);
         float plane = 0.0f;
-        for(unsigned int i = 0; i < 10; i++) {
+        for(unsigned int i = 0; i < 100; i++) {
             for(unsigned int j = 0; j < 10; j++) {
                 mat4 model;
                 glm_mat4_identity(model);
@@ -235,12 +249,6 @@ void process_input(GLFWwindow *window) {
         glm_vec3_crossn(cameraFront, cameraUp, cameraW);
         glm_vec3_scale(cameraW, cameraSpeed, cameraW);
         glm_vec3_add(cameraPos, cameraW, cameraPos);
-    }
-    if(glfwGetKey(window, GLFW_MOD_SHIFT) == GLFW_PRESS) {
-        speed = 2.0f;
-    }
-    if(glfwGetKey(window, GLFW_MOD_SHIFT) == GLFW_RELEASE) {
-        speed = 1.0f;
     }
 }
 

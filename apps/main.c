@@ -230,6 +230,9 @@ void process_input(GLFWwindow *window) {
     float cameraSpeed = 2.5 * deltaTime * speed;
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         vec3 cameraW;
+        if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+            cameraSpeed = 2.5 * cameraSpeed;
+        }
         glm_vec3_scale(cameraFront, cameraSpeed, cameraW);
         glm_vec3_add(cameraPos, cameraW, cameraPos);
     }
@@ -248,6 +251,16 @@ void process_input(GLFWwindow *window) {
         vec3 cameraW;
         glm_vec3_crossn(cameraFront, cameraUp, cameraW);
         glm_vec3_scale(cameraW, cameraSpeed, cameraW);
+        glm_vec3_add(cameraPos, cameraW, cameraPos);
+    }
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        vec3 cameraW = { 0.0f, 0.02f, 0.0f};
+        //glm_vec3_scale(cameraW, cameraSpeed, cameraW);
+        glm_vec3_add(cameraPos, cameraW, cameraPos);
+    }
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        vec3 cameraW = { 0.0f, -0.02f, 0.0f};
+        //glm_vec3_scale(cameraW, cameraSpeed, cameraW);
         glm_vec3_add(cameraPos, cameraW, cameraPos);
     }
 }

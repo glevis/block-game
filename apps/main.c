@@ -1,5 +1,6 @@
 #include "../include/glad/gl.h"
-#include <GLFW/glfw3.h>
+#include "../extern/glfw/include/GLFW/glfw3.h"
+//#include <GLFW/glfw3.h>
 #include "../include/shader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb_image.h"
@@ -7,6 +8,7 @@
 #include <stdlib.h>
 #include "../extern/cglm/include/cglm/cglm.h"
 #include "../include/block.h"
+#include "../include/camera.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -14,21 +16,19 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void process_input(GLFWwindow *window);
 
+camera_t camera;
+
 vec3 cameraPos = {0.0f, 0.0f, 3.0f};
 vec3 cameraFront = {0.0f, 0.0f, -1.0f};
 vec3 cameraUp = {0.0f, 1.0f, 0.0f};
 
 bool firstMouse = true;
-float yaw = -90.0f;
-float pitch = 0.0f;
 float lastX = 800.0 / 2.0;
 float lastY = 600.0 / 2.0;
-float fov = 45.0f;
+float fov = 90.0f;
 
 float deltaTime= 0.0f;
 float lastFrame = 0.0f;
-
-float speed = 1.0f;
 
 int main() {
     glfwInit();
@@ -65,9 +65,12 @@ int main() {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
+    camera_scalar_init(&camera, 0.0f, 0.0f, 3.0f, 0.0f, 1.0f, 0.0f, -90.0f, 0.0f);
+
     struct Shader shader1;
 
-    shader_init("/home/glevis/personal/craft-project/shaders/shader.vs", "/home/glevis/personal/craft-project/shaders/shader.fs", &shader1);
+    //shader_init("/home/glevis/personal/craft-project/shaders/shader.vs", "/home/glevis/personal/craft-project/shaders/shader.fs", &shader1);
+    shader_init("/home/levis/personal/block-game/shaders/shader.vs", "/home/levis/personal/block-game/shaders/shader.fs", &shader1);
 
     struct block_t* grass_block;
     grass_block = malloc(sizeof(struct block_t));
@@ -81,19 +84,6 @@ int main() {
     };
 
     vec3 origin = {0.0f, 0.0f, 0.0f};
-
-    vec3 cubePositions[] = {
-        {0.0f, 0.0f, 0.0f},
-        {2.0f, 5.0f, -15.0f},
-        {-1.5f, -2.0f, -2.5f},
-        {-3.8f, -2.0f, -12.3f},
-        {2.4f, -0.4f, -3.5f},
-        {-1.7f, 3.0f, -7.5f},
-        {1.3f, -2.0f, -2.5f},
-        {1.5f, 2.0f, -2.5f},
-        {1.5f, 0.2f, -1.5f},
-        {-1.3f, 1.0f, -1.5f},
-    };
 
     /*
      * Vertex Buffer Object (VBO):
@@ -157,6 +147,7 @@ int main() {
 
         if (currentTime - lastTime >= 1.0) {
             printf("%f ms/frame\n", 1000.0/(double)nbFrames);
+            printf("%d fps\n", nbFrames);
             nbFrames = 0;
             lastTime += 1.0;
         }
@@ -181,27 +172,28 @@ int main() {
         shader_set_mat4("projection", proj[0], &shader1);
 
         mat4 view;
-        vec3 center;
-        glm_vec3_add(cameraPos, cameraFront, center);
-        glm_lookat(cameraPos, center, cameraUp, view);
+        camera_get_view_matrix(&camera, &view);
         shader_set_mat4("view", view[0], &shader1);
 
         glBindVertexArray(VAO);
         float plane = 0.0f;
-        for(unsigned int i = 0; i < 100; i++) {
-            for(unsigned int j = 0; j < 10; j++) {
-                mat4 model;
-                glm_mat4_identity(model);
-                vec3 pos;
-                vec3 offset = {1.0f, 0.0f, 0.0f};
-                vec3 z_scale = {0.0f, 0.0f, plane};
-                glm_vec3_scale(offset, 1.0f * (float) j, offset);
-                glm_vec3_add(offset, z_scale, offset);
-                glm_vec3_add(origin, offset, pos);
-                glm_translate(model, pos);
-                vec3 axis = {1.0f, 0.3f, 0.5f};
-                shader_set_mat4("model", model[0], &shader1);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
+        for(unsigned int i = 0; i < 16; i++) {
+            for(unsigned int j = 0; j < 16; j++) {
+                for(unsigned int k = 0; k < 16; k++) {
+                    mat4 model;
+                    glm_mat4_identity(model);
+                    vec3 pos = {j, i, k};
+                    /*
+                    vec3 offset = {1.0f, 0.0f, 0.0f};
+                    vec3 z_scale = {0.0f, 0.0f, plane};
+                    glm_vec3_scale(offset, 1.0f * (float) j, offset);
+                    glm_vec3_add(offset, z_scale, offset);
+                    glm_vec3_add(origin, offset, pos);
+                    */
+                    glm_translate(model, pos);
+                    shader_set_mat4("model", model[0], &shader1);
+                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                }
             }
             plane -= 1.0f;
         }
@@ -227,32 +219,19 @@ void process_input(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, 1);
     }
 
-    float cameraSpeed = 2.5 * deltaTime * speed;
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        vec3 cameraW;
-        if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-            cameraSpeed = 2.5 * cameraSpeed;
-        }
-        glm_vec3_scale(cameraFront, cameraSpeed, cameraW);
-        glm_vec3_add(cameraPos, cameraW, cameraPos);
+        process_keyboard(&camera, FORWARD, deltaTime);
     }
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        vec3 cameraW;
-        glm_vec3_scale(cameraFront, cameraSpeed, cameraW);
-        glm_vec3_sub(cameraPos, cameraW, cameraPos);
+        process_keyboard(&camera, BACKWARD, deltaTime);
     }
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        vec3 cameraW;
-        glm_vec3_crossn(cameraFront, cameraUp, cameraW);
-        glm_vec3_scale(cameraW, cameraSpeed, cameraW);
-        glm_vec3_sub(cameraPos, cameraW, cameraPos);
+        process_keyboard(&camera, LEFT, deltaTime);
     }
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        vec3 cameraW;
-        glm_vec3_crossn(cameraFront, cameraUp, cameraW);
-        glm_vec3_scale(cameraW, cameraSpeed, cameraW);
-        glm_vec3_add(cameraPos, cameraW, cameraPos);
+        process_keyboard(&camera, RIGHT, deltaTime);
     }
+    /*
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         vec3 cameraW = { 0.0f, 0.02f, 0.0f};
         //glm_vec3_scale(cameraW, cameraSpeed, cameraW);
@@ -263,6 +242,7 @@ void process_input(GLFWwindow *window) {
         //glm_vec3_scale(cameraW, cameraSpeed, cameraW);
         glm_vec3_add(cameraPos, cameraW, cameraPos);
     }
+    */
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
@@ -281,26 +261,8 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
     lastX = xpos;
     lastY = ypos;
-
-    float sensitivity = 0.01f; // change this value to your liking
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-    vec3 front;
-
-    front[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
-    front[1] = sin(glm_rad(pitch));
-    front[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
-    glm_vec3_normalize_to(front, cameraFront);
+    
+    process_mouse_movement(&camera, xoffset, yoffset, true);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called

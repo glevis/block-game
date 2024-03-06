@@ -18,14 +18,11 @@ void process_input(GLFWwindow *window);
 
 camera_t camera;
 
-vec3 cameraPos = {0.0f, 0.0f, 3.0f};
-vec3 cameraFront = {0.0f, 0.0f, -1.0f};
-vec3 cameraUp = {0.0f, 1.0f, 0.0f};
 
 bool firstMouse = true;
 float lastX = 800.0 / 2.0;
 float lastY = 600.0 / 2.0;
-float fov = 90.0f;
+float fov = 45.0f;
 
 float deltaTime= 0.0f;
 float lastFrame = 0.0f;
@@ -63,11 +60,11 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    glFrontFace(GL_CW);
 
     camera_scalar_init(&camera, 0.0f, 0.0f, 3.0f, 0.0f, 1.0f, 0.0f, -90.0f, 0.0f);
 
-    struct Shader shader1;
+    shader_t shader1;
 
     //shader_init("/home/glevis/personal/craft-project/shaders/shader.vs", "/home/glevis/personal/craft-project/shaders/shader.fs", &shader1);
     shader_init("/home/levis/personal/block-game/shaders/shader.vs", "/home/levis/personal/block-game/shaders/shader.fs", &shader1);
@@ -77,11 +74,6 @@ int main() {
 
     block_init(grass_block, grass);
     printf("%f\n", grass_block->vertices[0]);
-
-    unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
 
     vec3 origin = {0.0f, 0.0f, 0.0f};
 
@@ -100,8 +92,8 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(grass_block->vertices), grass_block->vertices, GL_STATIC_DRAW);
 
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(grass_block->indices), grass_block->indices, GL_STATIC_DRAW);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -139,6 +131,9 @@ int main() {
 
     double lastTime = glfwGetTime();
     int nbFrames = 0;
+
+    // wireframe mode
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -182,7 +177,7 @@ int main() {
                 for(unsigned int k = 0; k < 16; k++) {
                     mat4 model;
                     glm_mat4_identity(model);
-                    vec3 pos = {j, i, k};
+                    vec3 pos = {j * 2, i * 2, k};
                     /*
                     vec3 offset = {1.0f, 0.0f, 0.0f};
                     vec3 z_scale = {0.0f, 0.0f, plane};
@@ -192,7 +187,9 @@ int main() {
                     */
                     glm_translate(model, pos);
                     shader_set_mat4("model", model[0], &shader1);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                    //glDrawArrays(GL_TRIANGLES, 0, 36);
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); 
                 }
             }
             plane -= 1.0f;

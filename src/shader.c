@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "../include/glad/gl.h"
 
-void shader_init(const char* vertex_path, const char* fragment_path, struct Shader* shader) {
+void shader_init(const char* vertex_path, const char* fragment_path, shader_t* shader) {
     FILE *v_shader_file;
     FILE *f_shader_file;
 
@@ -86,23 +86,23 @@ void shader_init(const char* vertex_path, const char* fragment_path, struct Shad
 
 }
 
-void shader_use(struct Shader *shader) {
+void shader_use(shader_t *shader) {
     glUseProgram(shader->ID);
 }
 
 
-void shader_set_bool(const char* name, int value, struct Shader *shader) {
+void shader_set_bool(const char* name, int value, shader_t *shader) {
     glUniform1i(glGetUniformLocation(shader->ID, name), value);
 }
 
-void shader_set_int(const char* name, int value, struct Shader* shader) {
+void shader_set_int(const char* name, int value, shader_t* shader) {
     glUniform1i(glGetUniformLocation(shader->ID, name), value);
 }
 
-void shader_set_float(const char* name, float value, struct Shader* shader) {
+void shader_set_float(const char* name, float value, shader_t* shader) {
     glUniform1f(glGetUniformLocation(shader->ID, name), value);
 }
 
-void shader_set_mat4(const char* name, const GLfloat *value, struct Shader *shader) {
+void shader_set_mat4(const char* name, const GLfloat *value, shader_t *shader) {
     glUniformMatrix4fv(glGetUniformLocation(shader->ID, name), 1, GL_FALSE, value);
 }

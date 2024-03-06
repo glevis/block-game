@@ -13,7 +13,7 @@ struct block_t {
     float extent;
 
     //move to blockmesh
-    float vertices[40];
+    float vertices[80];
     unsigned int indices[36];
     float textures[16];
     

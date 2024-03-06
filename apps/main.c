@@ -32,7 +32,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
@@ -67,13 +67,12 @@ int main() {
     shader_t shader1;
 
     //shader_init("/home/glevis/personal/craft-project/shaders/shader.vs", "/home/glevis/personal/craft-project/shaders/shader.fs", &shader1);
-    shader_init("/home/levis/personal/block-game/shaders/shader.vs", "/home/levis/personal/block-game/shaders/shader.fs", &shader1);
+    shader_init("/Users/levis/personal/block-game/shaders/shader.vs", "/Users/levis/personal/block-game/shaders/shader.fs", &shader1);
 
     struct block_t* grass_block;
     grass_block = malloc(sizeof(struct block_t));
 
     block_init(grass_block, grass);
-    printf("%f\n", grass_block->vertices[0]);
 
     vec3 origin = {0.0f, 0.0f, 0.0f};
 
